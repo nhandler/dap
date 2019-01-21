@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euxo pipefail
+
+/usr/bin/defaults write net.clawpaws.PDFtoKeynote presentationSize "1280 x 720"
+/usr/bin/defaults write net.clawpaws.PDFtoKeynote autoSaveAfterOpen 1
+/usr/bin/defaults write net.clawpaws.PDFtoKeynote autoOpenAfterSave 0
+/usr/bin/defaults write net.clawpaws.PDFtoKeynote autoCloseAfterSave 1
+if [ -z `defaults read com.nhandler.dap presentationDirectory 2> /dev/null` ]; then
+  defaults write com.nhandler.dap  presentationDirectory -string ~/Documents/Presentations
+fi
+
+/usr/local/bin/fswatch -1 -0 -r -L -e '.*' -I -i '\.md$' $(defaults read com.nhandler.dap presentationDirectory) | /usr/bin/xargs -0 -n 1 -I {} /usr/local/bin/dap.applescript {}
+sleep 60
